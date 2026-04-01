@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Casa Spanton — Progress Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:       #C8A96E;
+      --gold-light: #E0CC9E;
+      --green:      #7A9E7A;
+      --blue:       #8A9EB8;
+      --warm-dark:  #1A1510;
+      --warm-mid:   #2A1F0E;
+      --warm-deep:  #0E1A15;
+      --cream:      #F7F4EE;
+      --cream-mid:  #EDE9E0;
+      --cream-dark: #DDD8CC;
+      --text-1:     #1C1A16;
+      --text-2:     #5A5550;
+      --text-3:     #9A9590;
+      --border:     rgba(0,0,0,0.09);
+      --border-med: rgba(0,0,0,0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text-1);
+      line-height: 1.6;
+    }
+
+    /* ── COVER / HERO ── */
+    .cover {
+      position: relative;
+      width: 100%;
+      height: 520px;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .cover-img {
+      position: absolute;
+      inset: 0;
+      background: var(--warm-dark);
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* Overlay gradient like booklet */
+    .cover-img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(20,15,8,0.82) 0%, rgba(20,15,8,0.25) 55%, rgba(20,15,8,0.10) 100%);
+    }
+
+    .cover-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      padding: 2.5rem 3rem;
+    }
+
+    .cover-eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .cover-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 56px;
+      font-weight: 300;
+      color: #F5F0E8;
+      line-height: 1.0;
+      margin-bottom: 0.3rem;
+    }
+
+    .cover-sub {
+      font-size: 13px;
+      color: rgba(245,240,232,0.55);
+      margin-bottom: 2rem;
+    }
+
+    /* KPI bar inside cover */
+    .cover-kpis {
+      display: flex;
+      gap: 0;
+      background: rgba(255,255,255,0.07);
+      border: 0.5px solid rgba(255,255,255,0.10);
+      border-radius: 10px;
+      overflow: hidden;
+      max-width: 600px;
+    }
+
+    .kpi {
+      flex: 1;
+      padding: 1rem 1.3rem;
+      border-right: 0.5px solid rgba(255,255,255,0.08);
+    }
+    .kpi:last-child { border-right: none; }
+
+    .kpi-label {
+      font-size: 10px;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: rgba(200,190,170,0.55);
+      margin-bottom: 0.35rem;
+    }
+
+    .kpi-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 300;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .kpi-note {
+      font-size: 10px;
+      color: rgba(200,190,170,0.40);
+      margin-top: 0.3rem;
+    }
+
+    /* Logo top-right */
+    .cover-logo {
+      position: absolute;
+      top: 1.75rem;
+      right: 2.5rem;
+      z-index: 3;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.6);
+    }
+
+    /* ── MAIN CONTENT ── */
+    .main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem 5rem;
+    }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 2.5rem; }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 1.1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 0.5px solid var(--border-med);
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--text-1);
+    }
+
+    .section-sub {
+      font-size: 12px;
+      color: var(--text-3);
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: #fff;
+      border: 0.5px solid var(--border);
+      border-radius: 14px;
+      padding: 1.3rem 1.5rem;
+    }
+
+    .card-dark {
+      background: var(--warm-dark);
+      border: 0.5px solid #2A2218;
+      border-radius: 14px;
+      padding: 1.3rem 1.5rem;
+    }
+
+    /* ── PROGRESS KPI CARDS ── */
+    .three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.75rem; }
+    .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+    .progress-card-label {
+      font-size: 10px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 0.8rem;
+    }
+
+    .bar-track {
+      height: 4px;
+      background: var(--cream-mid);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 0.65rem;
+    }
+
+    .bar-track-dark { background: rgba(255,255,255,0.07); }
+
+    .bar-fill { height: 100%; border-radius: 2px; transition: width 1.2s ease; }
+
+    .pct-big {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      font-weight: 300;
+      line-height: 1;
+    }
+
+    .pct-note { font-size: 11px; color: var(--text-3); margin-top: 0.4rem; line-height: 1.4; }
+
+    /* ── AREA CARDS ── */
+    .area-card { background: #fff; border: 0.5px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 0.75rem; }
+    .area-card:last-child { margin-bottom: 0; }
+
+    .area-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem 0.85rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .area-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 400;
+    }
+
+    .area-pct-pill { display: flex; align-items: center; gap: 10px; }
+    .area-mini-bar { width: 80px; height: 3px; background: var(--cream-mid); border-radius: 2px; overflow: hidden; }
+    .area-mini-bar-fill { height: 100%; border-radius: 2px; }
+    .area-pct-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 300;
+      color: var(--gold);
+    }
+
+    .area-body { display: grid; grid-template-columns: 1fr 1fr; }
+    .area-col { padding: 1.1rem 1.5rem; }
+    .area-col + .area-col { border-left: 0.5px solid var(--border); }
+
+    .area-col p { font-size: 13px; color: var(--text-2); line-height: 1.65; margin-bottom: 0.8rem; }
+
+    .bullets { list-style: none; }
+    .bullets li {
+      font-size: 13px;
+      color: var(--text-1);
+      padding: 0.22rem 0 0.22rem 1.1rem;
+      position: relative;
+      line-height: 1.5;
+    }
+    .bullets li::before { content: '—'; position: absolute; left: 0; color: var(--gold); font-size: 11px; top: 0.35rem; }
+    .bullets li.dim { color: var(--text-2); }
+    .bullets li.dim::before { color: var(--text-3); }
+
+    .upcoming-lbl {
+      font-size: 10px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin: 0.8rem 0 0.35rem;
+    }
+
+    /* ── COST ── */
+    .cc-label { font-size: 10px; letter-spacing: 0.11em; text-transform: uppercase; color: var(--text-3); margin-bottom: 0.6rem; }
+    .cc-label-dark { color: rgba(200,190,170,0.45); }
+
+    .cc-pct {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 52px;
+      font-weight: 300;
+      line-height: 1;
+    }
+
+    .cc-pct-sm {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 38px;
+      font-weight: 300;
+      line-height: 1;
+    }
+
+    .cc-amount { font-family: 'Cormorant Garamond', serif; font-size: 21px; font-weight: 300; margin-top: 0.8rem; }
+    .cc-amount-sub { font-size: 11px; color: var(--text-3); margin-top: 0.15rem; }
+    .cc-amount-sub-dark { color: rgba(150,140,120,0.6); }
+
+    .cc-note { font-size: 12px; color: var(--text-2); margin-top: 0.8rem; padding-top: 0.8rem; border-top: 0.5px solid var(--border); line-height: 1.55; }
+    .cc-note-dark { font-size: 12px; color: rgba(150,140,120,0.55); margin-top: 0.8rem; padding-top: 0.8rem; border-top: 0.5px solid rgba(255,255,255,0.06); line-height: 1.55; }
+
+    .flag { display: inline-flex; align-items: center; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; margin-top: 0.65rem; }
+    .flag-warn { background: #FAE8D0; color: #7A4A10; }
+    .flag-ok   { background: #E0EDD0; color: #3A6010; }
+
+    /* ── TIMELINE ── */
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 1rem;
+      padding: 0.6rem 0;
+      border-bottom: 0.5px solid var(--border);
+      font-size: 13px;
+      align-items: center;
+    }
+    .timeline-row:last-child { border-bottom: none; }
+    .tl-date { font-size: 12px; color: var(--text-3); }
+    .timeline-row.key .tl-date { color: var(--gold); }
+    .timeline-row.key .tl-event { font-weight: 500; }
+
+    /* ── TASKS ── */
+    .tasks-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .tasks-tbl td { padding: 0.55rem 0; border-bottom: 0.5px solid var(--border); vertical-align: middle; }
+    .tasks-tbl tr:last-child td { border-bottom: none; }
+    .td-who { color: var(--text-2); width: 150px; }
+    .td-status { text-align: right; width: 110px; }
+
+    .badge { display: inline-block; font-size: 10px; font-weight: 500; letter-spacing: 0.05em; padding: 2px 9px; border-radius: 20px; text-transform: uppercase; }
+    .b-done       { background: #E0EDD0; color: #3A6010; }
+    .b-ongoing    { background: #FAE8D0; color: #7A4A10; }
+    .b-review     { background: #D8E8F8; color: #1A5080; }
+    .b-notstarted { background: var(--cream-mid); color: var(--text-3); }
+
+    /* ── RISKS ── */
+    .risk {
+      padding: 0.85rem 1.1rem;
+      border-left: 2px solid var(--gold);
+      background: var(--cream-mid);
+      border-radius: 0 10px 10px 0;
+      margin-bottom: 0.65rem;
+      font-size: 13px;
+    }
+    .risk:last-child { margin-bottom: 0; }
+    .risk-title { font-weight: 500; margin-bottom: 0.2rem; }
+    .risk-desc  { color: var(--text-2); line-height: 1.55; }
+
+    /* ── PHOTO RECORD (booklet style) ── */
+    .photo-area-lbl {
+      font-size: 10px;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin: 1.75rem 0 0.75rem;
+    }
+    .photo-area-lbl:first-child { margin-top: 0; }
+
+    .photo-row-2     { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .photo-row-1     { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 8px; }
+    .photo-row-2-1   { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .photo-row-1-2   { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 8px; }
+
+    .photo-ph {
+      border-radius: 10px;
+      background: var(--cream-mid);
+      border: 0.5px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .photo-ph.tall   { aspect-ratio: 4/3; }
+    .photo-ph.wide   { aspect-ratio: 16/7; }
+    .photo-ph.square { aspect-ratio: 1; }
+
+    .photo-ph.loaded .ph-icon,
+    .photo-ph.loaded .ph-cap { display: none; }
+
+    .ph-icon { width: 22px; height: 22px; opacity: 0.18; flex-shrink: 0; }
+    .ph-cap  { font-size: 11px; color: var(--text-3); text-align: center; padding: 0 14px; line-height: 1.4; }
+
+    /* ── FOOTER ── */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.1rem 0;
+      font-size: 12px;
+      color: var(--text-3);
+      border-top: 0.5px solid var(--border-med);
+      margin-top: 2.5rem;
+    }
+
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      letter-spacing: 0.18em;
+      color: var(--text-2);
+    }
+
+    /* ── LOADING STATE ── */
+    .loading-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      background: var(--gold);
+      width: 0%;
+      transition: width 0.4s ease;
+      z-index: 100;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      .cover { height: 420px; }
+      .cover-content { padding: 1.75rem 1.5rem; }
+      .cover-title { font-size: 38px; }
+      .cover-kpis { flex-direction: column; max-width: 100%; }
+      .cover-logo { top: 1rem; right: 1.5rem; }
+      .main { padding: 1.75rem 1.25rem 4rem; }
+      .three-col, .two-col { grid-template-columns: 1fr; }
+      .area-body { grid-template-columns: 1fr; }
+      .area-col + .area-col { border-left: none; border-top: 0.5px solid var(--border); }
+      .photo-row-2, .photo-row-2-1, .photo-row-1-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="loading-bar" id="loadingBar"></div>
+
+<!-- ══ COVER ══ -->
+<div class="cover" id="cover">
+  <!-- 
+    COVER PHOTO: Set background-image via JS from Sheet, or hardcode here.
+    Example: style="background-image: url('YOUR_GOOGLE_DRIVE_DIRECT_LINK');"
+  -->
+  <div class="cover-img" id="coverImg"></div>
+  <div class="cover-logo" id="coverLogo">SPHERA</div>
+  <div class="cover-content">
+    <div class="cover-eyebrow" id="coverEyebrow">Progress Report · —</div>
+    <div class="cover-title">Casa Spanton</div>
+    <div class="cover-sub">Sámara, Costa Rica &nbsp;·&nbsp; Main House + Casita + Rental House</div>
+    <div class="cover-kpis">
+      <div class="kpi">
+        <div class="kpi-label">Overall progress</div>
+        <div class="kpi-value" id="kpiProgress">—%</div>
+        <div class="kpi-note" id="kpiProgressNote">loading…</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Budget used</div>
+        <div class="kpi-value" id="kpiBudget">—%</div>
+        <div class="kpi-note" id="kpiBudgetNote">loading…</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">GC fee paid</div>
+        <div class="kpi-value" id="kpiGC">—%</div>
+        <div class="kpi-note" id="kpiGCNote">loading…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN CONTENT ══ -->
+<div class="main">
+
+  <!-- Construction Progress -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Construction progress</div>
+      <div class="section-sub">by structure</div>
+    </div>
+    <div class="three-col">
+      <div class="card">
+        <div class="progress-card-label">Casita</div>
+        <div class="bar-track"><div class="bar-fill" id="barCasita" style="background:var(--gold);width:0%"></div></div>
+        <div class="pct-big" id="pctCasita">—%</div>
+        <div class="pct-note" id="noteCasita">loading…</div>
+      </div>
+      <div class="card">
+        <div class="progress-card-label">Main House</div>
+        <div class="bar-track"><div class="bar-fill" id="barMain" style="background:var(--green);width:0%"></div></div>
+        <div class="pct-big" id="pctMain">—%</div>
+        <div class="pct-note" id="noteMain">loading…</div>
+      </div>
+      <div class="card">
+        <div class="progress-card-label">Overall</div>
+        <div class="bar-track"><div class="bar-fill" id="barOverall" style="background:var(--blue);width:0%"></div></div>
+        <div class="pct-big" id="pctOverall">—%</div>
+        <div class="pct-note" id="noteOverall">loading…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Area Updates -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Area updates</div>
+      <div class="section-sub">on-site progress</div>
+    </div>
+
+    <div class="area-card">
+      <div class="area-card-header">
+        <div class="area-title">Casita</div>
+        <div class="area-pct-pill">
+          <div class="area-mini-bar"><div class="area-mini-bar-fill" id="miniBarCasita" style="background:var(--gold);width:0%"></div></div>
+          <div class="area-pct-label" id="miniPctCasita">—%</div>
+        </div>
+      </div>
+      <div class="area-body">
+        <div class="area-col">
+          <p id="casitaIntro">Loading…</p>
+          <ul class="bullets" id="casitaDone"></ul>
+          <div class="upcoming-lbl">Upcoming</div>
+          <ul class="bullets" id="casitaUpcoming"></ul>
+        </div>
+        <div class="area-col">
+          <p id="casitaNote">Loading…</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="area-card">
+      <div class="area-card-header">
+        <div class="area-title">Main House</div>
+        <div class="area-pct-pill">
+          <div class="area-mini-bar"><div class="area-mini-bar-fill" id="miniBarMain" style="background:var(--green);width:0%"></div></div>
+          <div class="area-pct-label" id="miniPctMain" style="color:var(--green)">—%</div>
+        </div>
+      </div>
+      <div class="area-body">
+        <div class="area-col">
+          <p id="mainIntro">Loading…</p>
+          <ul class="bullets" id="mainDone"></ul>
+          <div class="upcoming-lbl">Upcoming</div>
+          <ul class="bullets" id="mainUpcoming"></ul>
+        </div>
+        <div class="area-col">
+          <p id="mainNote">Loading…</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="area-card" style="margin-bottom:0">
+        <div class="area-card-header">
+          <div class="area-title">Pool</div>
+          <div class="area-pct-pill">
+            <div class="area-mini-bar"><div class="area-mini-bar-fill" id="miniBarPool" style="background:var(--blue);width:0%"></div></div>
+            <div class="area-pct-label" id="miniPctPool" style="color:var(--blue)">—%</div>
+          </div>
+        </div>
+        <div class="area-col">
+          <p id="poolIntro">Loading…</p>
+          <ul class="bullets" id="poolDone"></ul>
+          <div class="upcoming-lbl">Upcoming</div>
+          <ul class="bullets" id="poolUpcoming"></ul>
+        </div>
+      </div>
+      <div class="area-card" style="margin-bottom:0">
+        <div class="area-card-header">
+          <div class="area-title">Hardscape &amp; Landscape</div>
+          <div class="area-pct-pill">
+            <div class="area-pct-label" id="miniPctHard" style="color:var(--green);font-size:13px;letter-spacing:0.04em">—</div>
+          </div>
+        </div>
+        <div class="area-col">
+          <p id="hardIntro">Loading…</p>
+          <ul class="bullets" id="hardDone"></ul>
+          <div class="upcoming-lbl">Upcoming</div>
+          <ul class="bullets" id="hardUpcoming"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cost Summary -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Cost summary</div>
+      <div class="section-sub" id="costDate">as of —</div>
+    </div>
+
+    <div class="two-col" style="margin-bottom:0.75rem">
+      <div class="card-dark">
+        <div class="cc-label cc-label-dark">Overall budget used</div>
+        <div class="cc-pct" id="costBudgetPct" style="color:var(--gold)">—%</div>
+        <div class="bar-track bar-track-dark" style="margin-top:0.75rem">
+          <div class="bar-fill" id="costBudgetBar" style="background:var(--gold);width:0%"></div>
+        </div>
+        <div class="cc-amount" id="costBudgetAmount" style="color:#C8B89A">—</div>
+        <div class="cc-amount-sub cc-amount-sub-dark" id="costBudgetSub">—</div>
+        <div class="cc-note-dark" id="costBudgetNote">—</div>
+      </div>
+      <div class="card">
+        <div class="cc-label">GC fee paid</div>
+        <div class="cc-pct" id="costGCPct" style="color:var(--green)">—%</div>
+        <div class="bar-track" style="margin-top:0.75rem">
+          <div class="bar-fill" id="costGCBar" style="background:var(--green);width:0%"></div>
+        </div>
+        <div class="cc-amount" id="costGCAmount">—</div>
+        <div class="cc-amount-sub" id="costGCSub">—</div>
+        <div class="cc-note" id="costGCNote">—</div>
+        <div class="flag flag-warn" id="costGCFlag" style="display:none"></div>
+      </div>
+    </div>
+
+    <div class="three-col">
+      <div class="card">
+        <div class="cc-label">Change orders</div>
+        <div class="cc-pct-sm" id="costCOPct" style="color:var(--blue)">—%</div>
+        <div class="bar-track" style="margin-top:0.75rem">
+          <div class="bar-fill" id="costCOBar" style="background:var(--blue);width:0%"></div>
+        </div>
+        <div class="cc-amount" id="costCOAmount" style="font-size:18px">—</div>
+        <div class="cc-amount-sub" id="costCOSub">—</div>
+        <div class="cc-note" id="costCONote">—</div>
+      </div>
+      <div class="card">
+        <div class="cc-label">Consultant inspections</div>
+        <div class="cc-pct-sm" id="costInspPct" style="color:#A08060">—%</div>
+        <div class="bar-track" style="margin-top:0.75rem">
+          <div class="bar-fill" id="costInspBar" style="background:#A08060;width:0%"></div>
+        </div>
+        <div class="cc-amount" id="costInspAmount" style="font-size:18px">—</div>
+        <div class="cc-amount-sub" id="costInspSub">—</div>
+        <div class="cc-note" id="costInspNote">—</div>
+      </div>
+      <div class="card">
+        <div class="cc-label">Consultants &amp; providers</div>
+        <div class="cc-pct-sm" id="costProvPct" style="color:var(--green)">—%</div>
+        <div class="bar-track" style="margin-top:0.75rem">
+          <div class="bar-fill" id="costProvBar" style="background:var(--green);width:0%"></div>
+        </div>
+        <div class="cc-amount" id="costProvAmount" style="font-size:18px">—</div>
+        <div class="cc-amount-sub" id="costProvSub">—</div>
+        <div class="cc-note" id="costProvNote">—</div>
+        <div class="flag flag-ok" id="costProvFlag" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Milestones -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Key milestones</div>
+      <div class="section-sub">schedule</div>
+    </div>
+    <div class="card" id="milestonesContainer">
+      <div class="timeline-row"><span class="tl-date">loading…</span><span class="tl-event">—</span></div>
+    </div>
+  </div>
+
+  <!-- Coordination + Risks -->
+  <div class="two-col section">
+    <div>
+      <div class="section-header"><div class="section-title">Coordination tasks</div></div>
+      <div class="card" style="margin-bottom:1rem">
+        <table class="tasks-tbl" id="coordTable">
+          <tr><td class="td-who">—</td><td>Loading…</td><td class="td-status"></td></tr>
+        </table>
+      </div>
+      <div class="section-header"><div class="section-title">Permits</div></div>
+      <div class="card">
+        <table class="tasks-tbl" id="permitsTable">
+          <tr><td class="td-who">—</td><td>Loading…</td><td class="td-status"></td></tr>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div class="section-header"><div class="section-title">Risks &amp; flags</div></div>
+      <div id="risksContainer">
+        <div class="risk"><div class="risk-title">Loading…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Photo Record -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Photographic record</div>
+      <div class="section-sub" id="photoDate">—</div>
+    </div>
+
+    <div class="photo-area-lbl">Main House</div>
+    <div class="photo-row-2">
+      <div class="photo-ph tall" id="ph1"><svg class="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><div class="ph-cap" id="phCap1">—</div></div>
+      <div class="photo-ph tall" id="ph2"><svg class="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><div class="ph-cap" id="phCap2">—</div></div>
+    </div>
+    <div class="photo-row-2-1">
+      <div class="photo-ph tall" id="ph3"><svg class="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><div class="ph-cap" id="phCap3">—</div></div>
+      <div class="photo-ph tall" id="ph4"><svg class="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><div class="ph-cap" id="phCap4">—</div></div>
+    </div>
+
+    <div class="photo-area-lbl">Casita</div>
+    <div class="photo-row-1-2">
+      <div class="photo-ph tall" id="ph5"><svg class="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><div class="ph-cap" id="phCap5">—</div></div>
+      <div class="photo-ph tall" id="ph6"><svg class="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><div class="ph-cap" id="phCap6">—</div></div>
+    </div>
+    <div class="photo-row-2">
+      <div class="photo-ph tall" id="ph7"><svg class="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><div class="ph-cap" id="phCap7">—</div></div>
+      <div class="photo-ph tall" id="ph8"><svg class="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><div class="ph-cap" id="phCap8">—</div></div>
+    </div>
+
+    <div class="photo-area-lbl">Pool &amp; Hardscape</div>
+    <div class="photo-row-2">
+      <div class="photo-ph tall" id="ph9"><svg class="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><div class="ph-cap" id="phCap9">—</div></div>
+      <div class="photo-ph tall" id="ph10"><svg class="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><div class="ph-cap" id="phCap10">—</div></div>
+    </div>
+    <div class="photo-row-1">
+      <div class="photo-ph wide" id="ph11"><svg class="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><div class="ph-cap" id="phCap11">—</div></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span id="footerLeft">—</span>
+    <span class="footer-logo">SPHERA</span>
+  </div>
+
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  CONFIGURATION — paste your published CSV URL here
+// ════════════════════════════════════════════════════════
+
+// Paste the full URL from File → Share → Publish to web → CSV
+// It looks like: https://docs.google.com/spreadsheets/d/e/2PACX-.../pub?output=csv
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2qmnXPBgo1pvzvdrtir2Jg3smZV9szwykzyolHlsZe74juLVLvBZDJyaZ62oHdw/pub?output=csv';
+
+// ════════════════════════════════════════════════════════
+//  DATA LOADING — reads from Google Sheet (published CSV)
+//  + text/photos from admin form (saved in localStorage)
+// ════════════════════════════════════════════════════════
+
+async function loadSheetData() {
+  try {
+    const res  = await fetch(SHEET_CSV_URL);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    return parseCSV(text);
+  } catch(e) {
+    console.warn('Sheet fetch failed, using demo data:', e);
+    return null;
+  }
+}
+
+function parseCSV(text) {
+  const rows = {};
+  text.split('\n').forEach(line => {
+    const cols = line.match(/(".*?"|[^,]+)(?=,|$)/g) || [];
+    const key  = cols[0] ? cols[0].replace(/"/g,'').trim() : '';
+    const val  = cols[1] ? cols[1].replace(/"/g,'').trim() : '';
+    if (key) rows[key] = val;
+  });
+  return rows;
+}
+
+function loadFormData() {
+  try { return JSON.parse(localStorage.getItem('spantonReport') || '{}'); }
+  catch(e) { return {}; }
+}
+
+function setBar(barId, pct) {
+  const el = document.getElementById(barId);
+  if (el) el.style.width = pct + '%';
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el && val) el.textContent = val;
+}
+
+function setBullets(containerId, text, dimClass) {
+  const el = document.getElementById(containerId);
+  if (!el || !text) return;
+  el.innerHTML = '';
+  text.split('|').forEach(item => {
+    if (!item.trim()) return;
+    const li = document.createElement('li');
+    if (dimClass) li.classList.add(dimClass);
+    li.textContent = item.trim();
+    el.appendChild(li);
+  });
+}
+
+function setPhoto(phId, capId, url, caption) {
+  const ph  = document.getElementById(phId);
+  const cap = document.getElementById(capId);
+  if (ph && url) {
+    ph.style.backgroundImage = `url('${url}')`;
+    ph.classList.add('loaded');
+  }
+  if (cap && caption) cap.textContent = caption;
+}
+
+function badgeClass(status) {
+  const s = (status || '').toLowerCase();
+  if (s.includes('done') || s.includes('complet')) return 'b-done';
+  if (s.includes('ongoing') || s.includes('going'))  return 'b-ongoing';
+  if (s.includes('review'))                           return 'b-review';
+  return 'b-notstarted';
+}
+
+function buildTable(tableId, rowsText) {
+  const tbl = document.getElementById(tableId);
+  if (!tbl || !rowsText) return;
+  tbl.innerHTML = '';
+  rowsText.split('\n').forEach(row => {
+    if (!row.trim()) return;
+    const parts = row.split('||');
+    if (parts.length < 3) return;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="td-who">${parts[0].trim()}</td>
+      <td>${parts[1].trim()}</td>
+      <td class="td-status"><span class="badge ${badgeClass(parts[2])}">${parts[2].trim()}</span></td>`;
+    tbl.appendChild(tr);
+  });
+}
+
+function buildMilestones(text) {
+  const c = document.getElementById('milestonesContainer');
+  if (!c || !text) return;
+  c.innerHTML = '';
+  text.split('\n').forEach(row => {
+    if (!row.trim()) return;
+    const parts = row.split('||');
+    if (parts.length < 2) return;
+    const isKey = parts[2] && parts[2].trim().toLowerCase() === 'key';
+    const div = document.createElement('div');
+    div.className = 'timeline-row' + (isKey ? ' key' : '');
+    div.innerHTML = `<span class="tl-date">${parts[0].trim()}</span><span class="tl-event">${parts[1].trim()}</span>`;
+    c.appendChild(div);
+  });
+}
+
+function buildRisks(text) {
+  const c = document.getElementById('risksContainer');
+  if (!c || !text) return;
+  c.innerHTML = '';
+  text.split('\n').forEach(row => {
+    if (!row.trim()) return;
+    const parts = row.split('||');
+    if (parts.length < 2) return;
+    const div = document.createElement('div');
+    div.className = 'risk';
+    div.innerHTML = `<div class="risk-title">${parts[0].trim()}</div><div class="risk-desc">${parts[1].trim()}</div>`;
+    c.appendChild(div);
+  });
+}
+
+async function init() {
+  // progress bar visual feedback
+  const lb = document.getElementById('loadingBar');
+  lb.style.width = '40%';
+
+  const sheet = await loadSheetData();
+  const form  = loadFormData();
+  const d     = Object.assign({}, sheet, form); // form overrides sheet
+
+  lb.style.width = '100%';
+  setTimeout(() => lb.style.display = 'none', 600);
+
+  // ── Cover
+  setText('coverEyebrow', `Progress Report ${d.reportNumber || ''} · ${d.reportDate || ''}`);
+  if (d.coverPhotoUrl) {
+    document.getElementById('coverImg').style.backgroundImage = `url('${d.coverPhotoUrl}')`;
+  }
+
+  // ── KPIs
+  const prog = d.overallProgress || '65';
+  const budg = d.budgetUsed      || '62';
+  const gc   = d.gcFeePaid       || '68';
+
+  setText('kpiProgress',     prog + '%');
+  setText('kpiBudget',       budg + '%');
+  setText('kpiGC',           gc   + '%');
+  setText('kpiProgressNote', d.progressNote  || 'Overall construction');
+  setText('kpiBudgetNote',   d.budgetNote    || 'of total project budget');
+  setText('kpiGCNote',       d.gcNote        || 'of GC contract total');
+
+  // ── Progress bars
+  setText('pctCasita',  (d.casitaPct  || '90') + '%');
+  setText('pctMain',    (d.mainPct    || '59') + '%');
+  setText('pctOverall', (d.overallPct || '65') + '%');
+  setText('noteCasita',  d.casitaNote  || '');
+  setText('noteMain',    d.mainNote    || '');
+  setText('noteOverall', d.overallNote || '');
+  setBar('barCasita',  d.casitaPct  || 90);
+  setBar('barMain',    d.mainPct    || 59);
+  setBar('barOverall', d.overallPct || 65);
+
+  // ── Area mini bars
+  setBar('miniBarCasita', d.casitaPct || 90);
+  setBar('miniBarMain',   d.mainPct   || 59);
+  setBar('miniBarPool',   d.poolPct   || 80);
+  setText('miniPctCasita', (d.casitaPct || '90') + '%');
+  setText('miniPctMain',   (d.mainPct   || '59') + '%');
+  setText('miniPctPool',   (d.poolPct   || '80') + '%');
+  setText('miniPctHard',    d.hardPhase || 'Phase 01');
+
+  // ── Area text (from form)
+  setText('casitaIntro',  d.casitaIntro  || '');
+  setText('casitaNote',   d.casitaNote2  || '');
+  setText('mainIntro',    d.mainIntro    || '');
+  setText('mainNote',     d.mainNote2    || '');
+  setText('poolIntro',    d.poolIntro    || '');
+  setText('hardIntro',    d.hardIntro    || '');
+
+  setBullets('casitaDone',     d.casitaDone,     '');
+  setBullets('casitaUpcoming', d.casitaUpcoming, 'dim');
+  setBullets('mainDone',       d.mainDone,       '');
+  setBullets('mainUpcoming',   d.mainUpcoming,   'dim');
+  setBullets('poolDone',       d.poolDone,       '');
+  setBullets('poolUpcoming',   d.poolUpcoming,   'dim');
+  setBullets('hardDone',       d.hardDone,       '');
+  setBullets('hardUpcoming',   d.hardUpcoming,   'dim');
+
+  // ── Cost
+  setText('costDate',        d.reportDate   || '');
+  setText('costBudgetPct',   (d.budgetUsed  || '62') + '%');
+  setText('costGCPct',       (d.gcFeePaid   || '68') + '%');
+  setText('costCOPct',       (d.coPct       || '21.9') + '%');
+  setText('costInspPct',     (d.inspPct     || '93') + '%');
+  setText('costProvPct',     (d.provPct     || '~98') + '%');
+
+  setBar('costBudgetBar', d.budgetUsed || 62);
+  setBar('costGCBar',     d.gcFeePaid  || 68);
+  setBar('costCOBar',     d.coPct      || 22);
+  setBar('costInspBar',   d.inspPct    || 93);
+  setBar('costProvBar',   d.provPct    || 98);
+
+  setText('costBudgetAmount', d.budgetPaidAmount  || '$5,042,371');
+  setText('costBudgetSub',    d.budgetPaidSub     || 'paid to date · of $8.2M total');
+  setText('costBudgetNote',   d.budgetNote2       || 'Aligns with construction progress. Contingency fully committed.');
+  setText('costGCAmount',     d.gcPaidAmount      || '$4,052,335');
+  setText('costGCSub',        d.gcPaidSub         || 'paid · of $6,068,592 total');
+  setText('costGCNote',       d.gcNote2           || '$2,016,257 pending. Retention 2.5% held until completion.');
+  setText('costCOAmount',     d.coAmount          || '$1,020,057 total');
+  setText('costCOSub',        d.coSub             || '$790,352 approved · $190,292 pending');
+  setText('costCONote',       d.coNote            || 'As % of original GC contract.');
+  setText('costInspAmount',   d.inspAmount        || '$62,545 spent');
+  setText('costInspSub',      d.inspSub           || 'of $67,574 allocated');
+  setText('costInspNote',     d.inspNote          || '71 site visits across all consultants.');
+  setText('costProvAmount',   d.provAmount        || 'Most invoices settled');
+  setText('costProvSub',      d.provSub           || '');
+  setText('costProvNote',     d.provNote          || 'LOOP, SPHERA, JLC, Atelier, VIDA fully paid.');
+
+  if (d.gcFlag) {
+    const f = document.getElementById('costGCFlag');
+    f.textContent = d.gcFlag; f.style.display = 'inline-flex';
+  }
+  if (d.provFlag) {
+    const f = document.getElementById('costProvFlag');
+    f.textContent = d.provFlag; f.style.display = 'inline-flex';
+  }
+
+  // ── Milestones
+  buildMilestones(d.milestones || [
+    'Mar 25, 2026 || Pool construction finishing date',
+    'Apr 2, 2026 || Casita landscape + punch list',
+    'Apr 20, 2026 || Casita Go Live || key',
+    'May 10, 2026 || Main House landscape',
+    'Jun 1, 2026 || Start of Main House punch list',
+    'Jun 24, 2026 || Main House Go Live || key'
+  ].join('\n'));
+
+  // ── Coord + Permits + Risks
+  buildTable('coordTable',   d.coordTasks);
+  buildTable('permitsTable', d.permitsTasks);
+  buildRisks(d.risks);
+
+  // ── Photos
+  setText('photoDate', d.reportDate || '');
+  for (let i = 1; i <= 11; i++) {
+    setPhoto(`ph${i}`, `phCap${i}`, d[`photo${i}Url`], d[`photo${i}Cap`]);
+  }
+
+  // ── Footer
+  setText('footerLeft', `Report ${d.reportNumber || ''} · ${d.reportDate || ''} · ${d.reportAuthor || 'Fernanda & Nathalie Morales'}`);
+}
+
+init();
+</script>
+</body>
+</html>
