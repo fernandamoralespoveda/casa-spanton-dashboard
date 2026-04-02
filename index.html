@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Casa Spanton — Progress Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
@@ -31,7 +30,7 @@
     html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       background: var(--cream);
       color: var(--text-1);
       line-height: 1.6;
@@ -80,7 +79,7 @@
     }
 
     .cover-title {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 56px;
       font-weight: 300;
       color: #F5F0E8;
@@ -121,7 +120,7 @@
     }
 
     .kpi-value {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 28px;
       font-weight: 300;
       color: var(--gold);
@@ -140,7 +139,7 @@
       top: 1.75rem;
       right: 2.5rem;
       z-index: 3;
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 13px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
@@ -167,7 +166,7 @@
     }
 
     .section-title {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 26px;
       font-weight: 400;
       color: var(--text-1);
@@ -218,7 +217,7 @@
     .bar-fill { height: 100%; border-radius: 2px; transition: width 1.2s ease; }
 
     .pct-big {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 36px;
       font-weight: 300;
       line-height: 1;
@@ -239,7 +238,7 @@
     }
 
     .area-title {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 22px;
       font-weight: 400;
     }
@@ -248,7 +247,7 @@
     .area-mini-bar { width: 80px; height: 3px; background: var(--cream-mid); border-radius: 2px; overflow: hidden; }
     .area-mini-bar-fill { height: 100%; border-radius: 2px; }
     .area-pct-label {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 20px;
       font-weight: 300;
       color: var(--gold);
@@ -285,20 +284,20 @@
     .cc-label-dark { color: rgba(200,190,170,0.45); }
 
     .cc-pct {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 52px;
       font-weight: 300;
       line-height: 1;
     }
 
     .cc-pct-sm {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 38px;
       font-weight: 300;
       line-height: 1;
     }
 
-    .cc-amount { font-family: 'Cormorant Garamond', serif; font-size: 21px; font-weight: 300; margin-top: 0.8rem; }
+    .cc-amount { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 21px; font-weight: 300; margin-top: 0.8rem; }
     .cc-amount-sub { font-size: 11px; color: var(--text-3); margin-top: 0.15rem; }
     .cc-amount-sub-dark { color: rgba(150,140,120,0.6); }
 
@@ -402,7 +401,7 @@
     }
 
     .footer-logo {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 15px;
       letter-spacing: 0.18em;
       color: var(--text-2);
@@ -444,7 +443,7 @@
     COVER PHOTO: Set background-image via JS from Sheet, or hardcode here.
     Example: style="background-image: url('YOUR_GOOGLE_DRIVE_DIRECT_LINK');"
   -->
-  <div class="cover-img" id="coverImg"></div>
+  <div class="cover-img" id="coverImg" style="background-image:url('https://drive.google.com/file/d/1hrUIrsWaW4Cz2Ycx48k6rk5A4oDm9S5B/view?usp=sharing');"></div>
   <div class="cover-logo" id="coverLogo">SPHERA</div>
   <div class="cover-content">
     <div class="cover-eyebrow" id="coverEyebrow">Progress Report · —</div>
