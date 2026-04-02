@@ -4,8 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Casa Spanton — Progress Dashboard</title>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -443,7 +442,7 @@
     COVER PHOTO: Set background-image via JS from Sheet, or hardcode here.
     Example: style="background-image: url('YOUR_GOOGLE_DRIVE_DIRECT_LINK');"
   -->
-  <div class="cover-img" id="<div class="cover-img" id="coverImg" style="background-image:url('https://drive.google.com/uc?id=1hrUIrsWaW4Cz2Ycx48k6rk5A4oDm9S5B');background-size:cover;background-position:center;"></div>" style="background-image:url('https://drive.google.com/file/d/1hrUIrsWaW4Cz2Ycx48k6rk5A4oDm9S5B/view?usp=sharing');"></div>
+  <div class="cover-img" id="coverImg"></div>
   <div class="cover-logo" id="coverLogo">SPHERA</div>
   <div class="cover-content">
     <div class="cover-eyebrow" id="coverEyebrow">Progress Report · —</div>
@@ -990,6 +989,133 @@ async function init() {
 }
 
 init();
+
+// ════════════════════════════════════════════════════════
+//  ANIMATIONS
+// ════════════════════════════════════════════════════════
+
+// 1. PARALLAX — cover photo moves slower than scroll
+window.addEventListener('scroll', () => {
+  const coverImg = document.getElementById('coverImg');
+  if (coverImg) {
+    const scrolled = window.scrollY;
+    coverImg.style.transform = `translateY(${scrolled * 0.35}px)`;
+  }
+});
+
+// 2. FADE + SLIDE UP on scroll — sections appear as you scroll down
+const fadeStyle = document.createElement('style');
+fadeStyle.textContent = `
+  .fade-in {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.65s ease, transform 0.65s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+document.head.appendChild(fadeStyle);
+
+document.querySelectorAll('.section, .area-card, .card, .card-dark, .risk').forEach((el, i) => {
+  el.classList.add('fade-in');
+  el.style.transitionDelay = `${(i % 4) * 0.07}s`;
+});
+
+const fadeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      fadeObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
+
+// 3. BARS FILL on scroll — progress bars animate when visible
+document.querySelectorAll('.bar-fill').forEach(bar => {
+  const targetWidth = bar.style.width;
+  bar.style.width = '0%';
+  bar.style.transition = 'width 1.1s cubic-bezier(0.4, 0, 0.2, 1)';
+
+  const barObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        setTimeout(() => { bar.style.width = targetWidth; }, 150);
+        barObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  barObserver.observe(bar);
+});
+
+// 4. NUMBERS COUNT UP — percentages and KPI numbers count from 0
+function countUp(el, target, duration = 1200, suffix = '') {
+  const start = performance.now();
+  const isDecimal = target % 1 !== 0;
+  const update = (now) => {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = eased * target;
+    el.textContent = (isDecimal ? current.toFixed(1) : Math.round(current)) + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+}
+
+const countTargets = [
+  { id: 'kpiProgress',  suffix: '%' },
+  { id: 'kpiBudget',    suffix: '%' },
+  { id: 'kpiGC',        suffix: '%' },
+  { id: 'pctCasita',    suffix: '%' },
+  { id: 'pctMain',      suffix: '%' },
+  { id: 'pctOverall',   suffix: '%' },
+  { id: 'costBudgetPct', suffix: '%' },
+  { id: 'costGCPct',    suffix: '%' },
+  { id: 'costCOPct',    suffix: '%' },
+  { id: 'costInspPct',  suffix: '%' },
+  { id: 'costProvPct',  suffix: '%' },
+  { id: 'miniPctCasita', suffix: '%' },
+  { id: 'miniPctMain',   suffix: '%' },
+  { id: 'miniPctPool',   suffix: '%' },
+];
+
+const countObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const text = el.textContent.replace('%','').replace('~','').trim();
+      const num = parseFloat(text);
+      if (!isNaN(num)) {
+        const prefix = el.textContent.includes('~') ? '~' : '';
+        countUp(el, num, 1200, '%');
+      }
+      countObserver.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+
+countTargets.forEach(({ id }) => {
+  const el = document.getElementById(id);
+  if (el) countObserver.observe(el);
+});
+
+// 5. CARD HOVER LIFT — cards lift slightly on mouse hover
+const hoverStyle = document.createElement('style');
+hoverStyle.textContent = `
+  .card, .card-dark, .area-card, .progress-card {
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+  }
+  .card:hover, .card-dark:hover, .area-card:hover, .progress-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+`;
+document.head.appendChild(hoverStyle);
 </script>
 </body>
 </html>
