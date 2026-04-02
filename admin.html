@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Casa Spanton — Report Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:    #C8A96E;
+      --green:   #7A9E7A;
+      --blue:    #8A9EB8;
+      --cream:   #F7F4EE;
+      --cream-2: #EDE9E0;
+      --text-1:  #1C1A16;
+      --text-2:  #5A5550;
+      --text-3:  #9A9590;
+      --border:  rgba(0,0,0,0.10);
+      --accent:  #C8A96E;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text-1);
+      min-height: 100vh;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      background: #1A1510;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topbar-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 300;
+      color: #F5F0E8;
+    }
+
+    .topbar-sub { font-size: 11px; color: #5a6a5a; margin-top: 1px; letter-spacing: 0.08em; }
+
+    .topbar-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+    }
+
+    /* ── LAYOUT ── */
+    .wrap {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 5rem;
+    }
+
+    /* ── SAVE BANNER ── */
+    .save-banner {
+      display: none;
+      background: #3A6010;
+      color: #fff;
+      font-size: 13px;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .save-banner.show { display: block; }
+
+    /* ── BLOCKS ── */
+    .block {
+      background: #fff;
+      border: 0.5px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+
+    .block-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.9rem 1.3rem;
+      border-bottom: 0.5px solid var(--border);
+      background: var(--cream);
+    }
+
+    .block-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--gold);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .block-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 400;
+    }
+
+    .block-body { padding: 1.3rem; }
+
+    /* ── FIELDS ── */
+    .field { margin-bottom: 1.1rem; }
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-2);
+      margin-bottom: 0.4rem;
+    }
+
+    .field-hint {
+      font-size: 11px;
+      color: var(--text-3);
+      margin-bottom: 0.5rem;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      line-height: 1.4;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="url"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--text-1);
+      background: var(--cream);
+      border: 0.5px solid rgba(0,0,0,0.15);
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="url"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--gold);
+      background: #fff;
+    }
+
+    textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
+    textarea.tall { min-height: 110px; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; }
+
+    .pct-input-wrap { position: relative; }
+    .pct-input-wrap input { padding-right: 2rem; }
+    .pct-suffix {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 13px;
+      color: var(--text-3);
+      pointer-events: none;
+    }
+
+    /* ── PHOTO ROW ── */
+    .photo-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .photo-field {
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0.8rem;
+      background: var(--cream);
+    }
+
+    .photo-field label { margin-bottom: 0.35rem; color: var(--text-3); }
+
+    .photo-preview {
+      width: 100%;
+      aspect-ratio: 4/3;
+      border-radius: 6px;
+      background: var(--cream-2);
+      background-size: cover;
+      background-position: center;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .photo-preview svg { opacity: 0.15; }
+
+    .photo-area-lbl {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin: 1.1rem 0 0.6rem;
+      padding-top: 1rem;
+      border-top: 0.5px solid var(--border);
+    }
+    .photo-area-lbl:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+
+    /* ── TABLE BUILDER ── */
+    .table-builder { margin-bottom: 0.5rem; }
+
+    .table-row {
+      display: grid;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      align-items: start;
+    }
+    .table-row.coord-row  { grid-template-columns: 1fr 2fr 1fr auto; }
+    .table-row.risk-row   { grid-template-columns: 1fr 2fr auto; }
+    .table-row.miles-row  { grid-template-columns: 1fr 2fr 1fr auto; }
+
+    .table-row select { padding: 0.6rem 0.5rem; }
+
+    .btn-del {
+      background: none;
+      border: 0.5px solid rgba(0,0,0,0.15);
+      border-radius: 6px;
+      color: var(--text-3);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 0 0.6rem;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-del:hover { border-color: #c0392b; color: #c0392b; }
+
+    .btn-add {
+      background: none;
+      border: 0.5px dashed rgba(0,0,0,0.2);
+      border-radius: 8px;
+      color: var(--text-3);
+      font-size: 13px;
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      width: 100%;
+      margin-top: 0.4rem;
+    }
+    .btn-add:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── SUBMIT ── */
+    .submit-bar {
+      position: sticky;
+      bottom: 0;
+      background: #fff;
+      border-top: 0.5px solid var(--border);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin: 0 -1.5rem;
+    }
+
+    .submit-info { font-size: 12px; color: var(--text-3); }
+
+    .btn-save {
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 0.7rem 2rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-save:hover { opacity: 0.88; }
+
+    .btn-preview {
+      background: none;
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--text-2);
+      padding: 0.65rem 1.3rem;
+      cursor: pointer;
+    }
+    .btn-preview:hover { border-color: var(--gold); color: var(--gold); }
+
+    @media (max-width: 640px) {
+      .two-col, .three-col { grid-template-columns: 1fr; }
+      .table-row.coord-row,
+      .table-row.risk-row,
+      .table-row.miles-row { grid-template-columns: 1fr; }
+      .photo-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="topbar-title">Casa Spanton — Report Admin</div>
+    <div class="topbar-sub">INTERNAL USE ONLY</div>
+  </div>
+  <div class="topbar-logo">SPHERA</div>
+</div>
+
+<div class="wrap">
+
+  <div class="save-banner" id="saveBanner">✓ Report saved. Open index.html to preview the dashboard.</div>
+
+  <!-- 1. Report Info -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-number">1</div>
+      <div class="block-title">Report info</div>
+    </div>
+    <div class="block-body">
+      <div class="two-col">
+        <div class="field">
+          <label>Report number</label>
+          <input type="text" id="reportNumber" placeholder="e.g. 17" />
+        </div>
+        <div class="field">
+          <label>Report date</label>
+          <input type="text" id="reportDate" placeholder="e.g. April 10, 2025" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Author(s)</label>
+        <input type="text" id="reportAuthor" placeholder="e.g. Fernanda & Nathalie Morales" />
+      </div>
+      <div class="field">
+        <label>Cover photo URL</label>
+        <div class="field-hint">Paste a direct image link from Google Drive. Go to Drive → Share → "Anyone with the link" → copy link → convert to direct link using: https://drive.google.com/uc?id=FILE_ID</div>
+        <input type="url" id="coverPhotoUrl" placeholder="https://drive.google.com/uc?id=..." />
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Area Updates -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-number">2</div>
+      <div class="block-title">Area updates</div>
+    </div>
+    <div class="block-body">
+
+      <!-- Casita -->
+      <div style="margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:0.5px solid var(--border)">
+        <div style="font-size:13px;font-weight:500;color:var(--text-2);margin-bottom:0.9rem;letter-spacing:0.04em">CASITA</div>
+        <div class="field">
+          <label>Summary paragraph</label>
+          <textarea id="casitaIntro" placeholder="Short summary of where things stand…"></textarea>
+        </div>
+        <div class="field">
+          <label>Completed items</label>
+          <div class="field-hint">One item per line. These show as bullet points.</div>
+          <textarea id="casitaDoneRaw" class="tall" placeholder="Stucco and window installation complete&#10;Bathroom tile installation complete&#10;Doors, kitchen cabinetry and closets installed"></textarea>
+        </div>
+        <div class="field">
+          <label>Upcoming items</label>
+          <textarea id="casitaUpcomingRaw" placeholder="Light fixtures, keypads, LED strips&#10;Final floor fine-tuning"></textarea>
+        </div>
+        <div class="field">
+          <label>Right column note</label>
+          <input type="text" id="casitaNote2" placeholder="e.g. Go Live depends on laundry area decision…" />
+        </div>
+      </div>
+
+      <!-- Main House -->
+      <div style="margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:0.5px solid var(--border)">
+        <div style="font-size:13px;font-weight:500;color:var(--text-2);margin-bottom:0.9rem;letter-spacing:0.04em">MAIN HOUSE</div>
+        <div class="field">
+          <label>Summary paragraph</label>
+          <textarea id="mainIntro" placeholder="Short summary…"></textarea>
+        </div>
+        <div class="field">
+          <label>Completed items</label>
+          <div class="field-hint">One item per line.</div>
+          <textarea id="mainDoneRaw" class="tall" placeholder="Interior walls — 1st and 2nd coat of sealant done&#10;Decorative wood beams installed&#10;Level 03 ceiling framework installed"></textarea>
+        </div>
+        <div class="field">
+          <label>Upcoming items</label>
+          <textarea id="mainUpcomingRaw" placeholder="Remaining terrace beams&#10;Bathroom tile installation"></textarea>
+        </div>
+        <div class="field">
+          <label>Right column note</label>
+          <input type="text" id="mainNote2" placeholder="e.g. Delivery rescheduled to first week of July…" />
+        </div>
+      </div>
+
+      <!-- Pool -->
+      <div style="margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:0.5px solid var(--border)">
+        <div style="font-size:13px;font-weight:500;color:var(--text-2);margin-bottom:0.9rem;letter-spacing:0.04em">POOL</div>
+        <div class="field">
+          <label>Summary paragraph</label>
+          <textarea id="poolIntro" placeholder="Short summary…"></textarea>
+        </div>
+        <div class="field">
+          <label>Completed items</label>
+          <textarea id="poolDoneRaw" placeholder="80% tiled, 40% grouted&#10;Both retaining walls complete"></textarea>
+        </div>
+        <div class="field">
+          <label>Upcoming items</label>
+          <textarea id="poolUpcomingRaw" placeholder="Remaining tile + grout&#10;Fixtures and lights"></textarea>
+        </div>
+      </div>
+
+      <!-- Hardscape -->
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--text-2);margin-bottom:0.9rem;letter-spacing:0.04em">HARDSCAPE & LANDSCAPE</div>
+        <div class="field">
+          <label>Summary paragraph</label>
+          <textarea id="hardIntro" placeholder="Short summary…"></textarea>
+        </div>
+        <div class="field">
+          <label>Completed items</label>
+          <textarea id="hardDoneRaw" placeholder="Swale trench excavation started&#10;Casita and pool planters filled"></textarea>
+        </div>
+        <div class="field">
+          <label>Upcoming items</label>
+          <textarea id="hardUpcomingRaw" placeholder="Jungle trail + stone swales&#10;Boulder walls — Main House"></textarea>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 3. Cost flags & notes -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-number">3</div>
+      <div class="block-title">Cost flags &amp; notes</div>
+    </div>
+    <div class="block-body">
+      <div class="field-hint" style="margin-bottom:1rem">Numbers and percentages come from the Google Sheet automatically. Here you only add flags or notes that need to appear on the dashboard.</div>
+      <div class="field">
+        <label>GC flag (leave empty if none)</label>
+        <input type="text" id="gcFlag" placeholder="e.g. Spa change order under review" />
+      </div>
+      <div class="field">
+        <label>Providers flag (leave empty if none)</label>
+        <input type="text" id="provFlag" placeholder="e.g. Up to date" />
+      </div>
+      <div class="field">
+        <label>Budget note (shown below the bar)</label>
+        <textarea id="budgetNote2" placeholder="e.g. Aligns with construction progress. Contingency fully committed."></textarea>
+      </div>
+      <div class="field">
+        <label>GC note</label>
+        <textarea id="gcNote2" placeholder="e.g. $2,016,257 pending. Retention 2.5% held until completion."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Milestones -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-number">4</div>
+      <div class="block-title">Key milestones</div>
+    </div>
+    <div class="block-body">
+      <div style="display:grid;grid-template-columns:1fr 2fr 1fr auto;gap:0.4rem;margin-bottom:0.5rem;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-3)">Date</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-3)">Event</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-3)">Highlight?</div>
+        <div></div>
+      </div>
+      <div class="table-builder" id="milestonesBuilder"></div>
+      <button class="btn-add" onclick="addMilestone()">+ Add milestone</button>
+    </div>
+  </div>
+
+  <!-- 5. Coordination tasks -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-number">5</div>
+      <div class="block-title">Coordination tasks</div>
+    </div>
+    <div class="block-body">
+      <div style="display:grid;grid-template-columns:1fr 2fr 1fr auto;gap:0.4rem;margin-bottom:0.5rem;">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-3)">Responsible</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-3)">Task</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-3)">Status</div>
+        <div></div>
+      </div>
+      <div class="table-builder" id="coordBuilder"></div>
+      <button class="btn-add" onclick="addCoord()">+ Add task</button>
+
+      <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:0.5px solid var(--border)">
+        <div style="font-size:13px;font-weight:500;color:var(--text-2);margin-bottom:0.9rem;">PERMITS</div>
+        <div class="table-builder" id="permitsBuilder"></div>
+        <button class="btn-add" onclick="addPermit()">+ Add permit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Risks -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-number">6</div>
+      <div class="block-title">Risks &amp; flags</div>
+    </div>
+    <div class="block-body">
+      <div class="table-builder" id="risksBuilder"></div>
+      <button class="btn-add" onclick="addRisk()">+ Add risk</button>
+    </div>
+  </div>
+
+  <!-- 7. Photos -->
+  <div class="block">
+    <div class="block-header">
+      <div class="block-number">7</div>
+      <div class="block-title">Photo record</div>
+    </div>
+    <div class="block-body">
+      <div class="field-hint" style="margin-bottom:1rem">Paste direct image links from Google Drive. To get a direct link: right-click file → Share → Anyone with link → copy the ID from the URL → use: https://drive.google.com/uc?id=YOUR_FILE_ID</div>
+
+      <div class="photo-area-lbl">Main House (photos 1–4)</div>
+      <div class="photo-row" id="photoRowMain"></div>
+
+      <div class="photo-area-lbl">Casita (photos 5–8)</div>
+      <div class="photo-row" id="photoRowCasita"></div>
+
+      <div class="photo-area-lbl">Pool & Hardscape (photos 9–11)</div>
+      <div class="photo-row" id="photoRowPool"></div>
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <div class="submit-bar">
+    <div class="submit-info">Data is saved locally and loaded by the dashboard automatically.</div>
+    <div style="display:flex;gap:0.75rem">
+      <button class="btn-preview" onclick="window.open('index.html','_blank')">Preview dashboard ↗</button>
+      <button class="btn-save" onclick="saveReport()">Save report</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ════════════════════════════════════════════════════
+//  DYNAMIC TABLE BUILDERS
+// ════════════════════════════════════════════════════
+const statusOptions = ['Done','On going','Under Review','Not Started','Rejected'];
+
+function statusSelect(val) {
+  return `<select>${statusOptions.map(s=>`<option ${s===val?'selected':''}>${s}</option>`).join('')}</select>`;
+}
+
+function addMilestone(date='', event='', key=false) {
+  const c = document.getElementById('milestonesBuilder');
+  const row = document.createElement('div');
+  row.className = 'table-row miles-row';
+  row.innerHTML = `
+    <input type="text" value="${date}" placeholder="Apr 20, 2026" />
+    <input type="text" value="${event}" placeholder="Casita Go Live" />
+    <select><option value="">Normal</option><option value="key" ${key?'selected':''}>Highlight</option></select>
+    <button class="btn-del" onclick="this.parentElement.remove()">×</button>`;
+  c.appendChild(row);
+}
+
+function addCoord(who='', task='', status='On going', container='coordBuilder') {
+  const c = document.getElementById(container);
+  const row = document.createElement('div');
+  row.className = 'table-row coord-row';
+  row.innerHTML = `
+    <input type="text" value="${who}" placeholder="Responsible" />
+    <input type="text" value="${task}" placeholder="Task description" />
+    ${statusSelect(status)}
+    <button class="btn-del" onclick="this.parentElement.remove()">×</button>`;
+  c.appendChild(row);
+}
+
+function addPermit(who='', task='', status='On going') { addCoord(who, task, status, 'permitsBuilder'); }
+
+function addRisk(title='', desc='') {
+  const c = document.getElementById('risksBuilder');
+  const row = document.createElement('div');
+  row.className = 'table-row risk-row';
+  row.innerHTML = `
+    <input type="text" value="${title}" placeholder="Risk title" />
+    <textarea style="min-height:60px;resize:vertical;padding:0.5rem 0.75rem;font-size:13px;">${desc}</textarea>
+    <button class="btn-del" onclick="this.parentElement.remove()">×</button>`;
+  c.appendChild(row);
+}
+
+function buildPhotoFields(containerId, indices) {
+  const c = document.getElementById(containerId);
+  indices.forEach(i => {
+    const div = document.createElement('div');
+    div.className = 'photo-field';
+    div.innerHTML = `
+      <label>Photo ${i}</label>
+      <div class="photo-preview" id="prev${i}">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9A9590" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+      </div>
+      <input type="url" id="photo${i}Url" placeholder="https://drive.google.com/uc?id=..." oninput="previewPhoto(${i})" />
+      <input type="text" id="photo${i}Cap" placeholder="Caption…" style="margin-top:0.4rem;" />`;
+    c.appendChild(div);
+  });
+}
+
+function previewPhoto(i) {
+  const url = document.getElementById(`photo${i}Url`).value;
+  const prev = document.getElementById(`prev${i}`);
+  if (url) {
+    prev.style.backgroundImage = `url('${url}')`;
+    prev.innerHTML = '';
+  }
+}
+
+// ════════════════════════════════════════════════════
+//  SAVE & LOAD
+// ════════════════════════════════════════════════════
+function linesToDelimited(raw) {
+  return raw.split('\n').map(s=>s.trim()).filter(Boolean).join('|');
+}
+
+function rowsFromBuilder(builderId, colCount) {
+  const rows = document.getElementById(builderId).querySelectorAll('.table-row');
+  return Array.from(rows).map(row => {
+    const inputs = row.querySelectorAll('input,textarea,select');
+    return Array.from(inputs).map(el=>el.value.trim()).join('||');
+  }).filter(Boolean).join('\n');
+}
+
+function saveReport() {
+  const data = {
+    reportNumber: document.getElementById('reportNumber').value,
+    reportDate:   document.getElementById('reportDate').value,
+    reportAuthor: document.getElementById('reportAuthor').value,
+    coverPhotoUrl: document.getElementById('coverPhotoUrl').value,
+
+    casitaIntro:    document.getElementById('casitaIntro').value,
+    casitaNote2:    document.getElementById('casitaNote2').value,
+    casitaDone:     linesToDelimited(document.getElementById('casitaDoneRaw').value),
+    casitaUpcoming: linesToDelimited(document.getElementById('casitaUpcomingRaw').value),
+
+    mainIntro:    document.getElementById('mainIntro').value,
+    mainNote2:    document.getElementById('mainNote2').value,
+    mainDone:     linesToDelimited(document.getElementById('mainDoneRaw').value),
+    mainUpcoming: linesToDelimited(document.getElementById('mainUpcomingRaw').value),
+
+    poolIntro:    document.getElementById('poolIntro').value,
+    poolDone:     linesToDelimited(document.getElementById('poolDoneRaw').value),
+    poolUpcoming: linesToDelimited(document.getElementById('poolUpcomingRaw').value),
+
+    hardIntro:    document.getElementById('hardIntro').value,
+    hardDone:     linesToDelimited(document.getElementById('hardDoneRaw').value),
+    hardUpcoming: linesToDelimited(document.getElementById('hardUpcomingRaw').value),
+
+    gcFlag:      document.getElementById('gcFlag').value,
+    provFlag:    document.getElementById('provFlag').value,
+    budgetNote2: document.getElementById('budgetNote2').value,
+    gcNote2:     document.getElementById('gcNote2').value,
+
+    milestones:  rowsFromBuilder('milestonesBuilder'),
+    coordTasks:  rowsFromBuilder('coordBuilder'),
+    permitsTasks: rowsFromBuilder('permitsBuilder'),
+    risks:       rowsFromBuilder('risksBuilder'),
+  };
+
+  // Photos
+  for (let i = 1; i <= 11; i++) {
+    data[`photo${i}Url`] = (document.getElementById(`photo${i}Url`) || {}).value || '';
+    data[`photo${i}Cap`] = (document.getElementById(`photo${i}Cap`) || {}).value || '';
+  }
+
+  localStorage.setItem('spantonReport', JSON.stringify(data));
+
+  const banner = document.getElementById('saveBanner');
+  banner.classList.add('show');
+  setTimeout(() => banner.classList.remove('show'), 4000);
+}
+
+function loadSaved() {
+  let data = {};
+  try { data = JSON.parse(localStorage.getItem('spantonReport') || '{}'); } catch(e) {}
+
+  const set = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val; };
+
+  set('reportNumber', data.reportNumber);
+  set('reportDate',   data.reportDate);
+  set('reportAuthor', data.reportAuthor);
+  set('coverPhotoUrl', data.coverPhotoUrl);
+  set('casitaIntro', data.casitaIntro);
+  set('casitaNote2', data.casitaNote2);
+  set('mainIntro',   data.mainIntro);
+  set('mainNote2',   data.mainNote2);
+  set('poolIntro',   data.poolIntro);
+  set('hardIntro',   data.hardIntro);
+  set('gcFlag',      data.gcFlag);
+  set('provFlag',    data.provFlag);
+  set('budgetNote2', data.budgetNote2);
+  set('gcNote2',     data.gcNote2);
+
+  // Bullet textareas — convert | back to newlines
+  const setLines = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val.split('|').join('\n'); };
+  setLines('casitaDoneRaw',     data.casitaDone);
+  setLines('casitaUpcomingRaw', data.casitaUpcoming);
+  setLines('mainDoneRaw',       data.mainDone);
+  setLines('mainUpcomingRaw',   data.mainUpcoming);
+  setLines('poolDoneRaw',       data.poolDone);
+  setLines('poolUpcomingRaw',   data.poolUpcoming);
+  setLines('hardDoneRaw',       data.hardDone);
+  setLines('hardUpcomingRaw',   data.hardUpcoming);
+
+  // Milestones
+  if (data.milestones) {
+    data.milestones.split('\n').forEach(row => {
+      if (!row.trim()) return;
+      const p = row.split('||');
+      addMilestone(p[0]||'', p[1]||'', p[2]==='key');
+    });
+  } else {
+    // defaults
+    [
+      ['Apr 2, 2026','Casita landscape + punch list',''],
+      ['Apr 20, 2026','Casita Go Live','key'],
+      ['Jun 1, 2026','Start of Main House punch list',''],
+      ['Jun 24, 2026','Main House Go Live','key'],
+    ].forEach(([d,e,k]) => addMilestone(d,e,k==='key'));
+  }
+
+  // Coord tasks
+  if (data.coordTasks) {
+    data.coordTasks.split('\n').forEach(row => {
+      const p = row.split('||');
+      addCoord(p[0]||'', p[1]||'', p[2]||'On going');
+    });
+  } else {
+    addCoord('Sofía Interiorismo','OSnE sourcing – Casita & Main House','On going');
+    addCoord('Totem','Spa quote – wood to metal structure','Done');
+  }
+
+  // Permits
+  if (data.permitsTasks) {
+    data.permitsTasks.split('\n').forEach(row => {
+      const p = row.split('||');
+      addPermit(p[0]||'', p[1]||'', p[2]||'On going');
+    });
+  } else {
+    addPermit('CFIA Permit','Remodeling permit approved','Done');
+    addPermit('Municipality','Main House permit – pending docs','On going');
+  }
+
+  // Risks
+  if (data.risks) {
+    data.risks.split('\n').forEach(row => {
+      const p = row.split('||');
+      addRisk(p[0]||'', p[1]||'');
+    });
+  } else {
+    addRisk('Permits','Municipality permit pending. Required for medium-voltage installation.');
+    addRisk('Floor tile delay','Supplier equipment failure affecting delivery. Team following up.');
+    addRisk('Contingency','Fully committed. No remaining buffer.');
+  }
+
+  // Photos
+  for (let i = 1; i <= 11; i++) {
+    const urlEl = document.getElementById(`photo${i}Url`);
+    const capEl = document.getElementById(`photo${i}Cap`);
+    if (urlEl && data[`photo${i}Url`]) { urlEl.value = data[`photo${i}Url`]; previewPhoto(i); }
+    if (capEl && data[`photo${i}Cap`]) capEl.value = data[`photo${i}Cap`];
+  }
+}
+
+// ════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════
+buildPhotoFields('photoRowMain',   [1,2,3,4]);
+buildPhotoFields('photoRowCasita', [5,6,7,8]);
+buildPhotoFields('photoRowPool',   [9,10,11]);
+loadSaved();
+</script>
+</body>
+</html>
